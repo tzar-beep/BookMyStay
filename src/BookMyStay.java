@@ -1,4 +1,9 @@
+import java.util.HashMap;
+import java.util.Map;
 
+/**
+ * Abstract Room class representing common room attributes.
+ */
 abstract class Room {
 
     protected String roomType;
@@ -13,6 +18,10 @@ abstract class Room {
         this.size = size;
     }
 
+    public String getRoomType() {
+        return roomType;
+    }
+
     public void displayRoomDetails() {
         System.out.println("Room Type: " + roomType);
         System.out.println("Beds: " + beds);
@@ -21,54 +30,106 @@ abstract class Room {
     }
 }
 
+/**
+ * Single Room
+ */
 class SingleRoom extends Room {
 
     public SingleRoom() {
-        super("Single Room", 1, 100.0, 200);
+        super("Single", 1, 100.0, 200);
     }
 }
 
+/**
+ * Double Room
+ */
 class DoubleRoom extends Room {
 
     public DoubleRoom() {
-        super("Double Room", 2, 180.0, 350);
+        super("Double", 2, 180.0, 350);
     }
 }
 
+/**
+ * Suite Room
+ */
 class SuiteRoom extends Room {
 
     public SuiteRoom() {
-        super("Suite Room", 3, 350.0, 600);
+        super("Suite", 3, 350.0, 600);
     }
 }
 
+/**
+ * Centralized Room Inventory Manager
+ */
+class RoomInventory {
+
+    private Map<String, Integer> inventory;
+
+    public RoomInventory() {
+
+        inventory = new HashMap<>();
+
+        // Initialize availability
+        inventory.put("Single", 10);
+        inventory.put("Double", 5);
+        inventory.put("Suite", 2);
+    }
+
+    public int getAvailability(String roomType) {
+        return inventory.getOrDefault(roomType, 0);
+    }
+
+    public void updateAvailability(String roomType, int change) {
+
+        int current = inventory.getOrDefault(roomType, 0);
+        inventory.put(roomType, current + change);
+    }
+
+    public void displayInventory() {
+
+        System.out.println("Current Room Inventory");
+        System.out.println("----------------------");
+
+        for (Map.Entry<String, Integer> entry : inventory.entrySet()) {
+            System.out.println(entry.getKey() + " Rooms Available: " + entry.getValue());
+        }
+    }
+}
+
+/**
+ * Application Entry Point
+ */
 public class HotelBookingApp {
 
     public static void main(String[] args) {
 
         System.out.println("Hotel Booking System v1.0");
-        System.out.println("--------------------------------");
+        System.out.println("---------------------------");
 
-        // Create room objects
-        Room singleRoom = new SingleRoom();
+        // Create rooms
+        Room single = new SingleRoom();
         Room doubleRoom = new DoubleRoom();
-        Room suiteRoom = new SuiteRoom();
+        Room suite = new SuiteRoom();
 
-        // Availability variables (simple variables, no data structures yet)
-        int singleAvailable = 10;
-        int doubleAvailable = 5;
-        int suiteAvailable = 2;
+        // Initialize inventory
+        RoomInventory inventory = new RoomInventory();
 
-        // Display room details
-        singleRoom.displayRoomDetails();
-        System.out.println("Available: " + singleAvailable);
+        // Display room details with availability
+        single.displayRoomDetails();
+        System.out.println("Available: " + inventory.getAvailability(single.getRoomType()));
         System.out.println();
 
         doubleRoom.displayRoomDetails();
-        System.out.println("Available: " + doubleAvailable);
+        System.out.println("Available: " + inventory.getAvailability(doubleRoom.getRoomType()));
         System.out.println();
 
-        suiteRoom.displayRoomDetails();
-        System.out.println("Available: " + suiteAvailable);
+        suite.displayRoomDetails();
+        System.out.println("Available: " + inventory.getAvailability(suite.getRoomType()));
+        System.out.println();
+
+        // Display full inventory
+        inventory.displayInventory();
     }
 }
